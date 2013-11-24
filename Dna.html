@@ -1,0 +1,633 @@
+<html>
+
+<head>
+
+<title>
+Takeru's WEBSITE
+</title>
+<script type="text/javascript">
+function onLoadFunction(difficulty){
+        
+	canvasWidth = 1000;
+	canvasHeight = 500;
+	canvasLength = 500
+	
+	movingX = canvasWidth/2;
+	movingY = canvasHeight/2;
+        movingZ = canvasHeight/2;
+	health=100;
+
+	if(difficulty==1){
+		enemyX = canvasWidth;
+		enemyY = canvasHeight;
+		enemyZ = canvasLength;
+		enemyStepSize=4;
+		enemyTimer=2;
+		enemyTimerValue=150;
+	}else if(difficulty==2){
+		enemyX = canvasWidth/6;
+		enemyY = canvasHeight/6;
+		enemyStepSize=15;
+		enemyTimer=1;
+		enemyTimerValue=75;
+	}else{
+		enemyX = canvasWidth/5;
+		enemyY = canvasHeight/5;
+		enemyStepSize=25;
+		enemyTimer=0;
+		enemyTimerValue=25;
+	}
+
+	nMoves=0;
+	gameOver=0;
+	score = new Array
+	scoreSum=0;
+
+	stepSize = 6;
+	stepSizeFactor=2;
+
+	setMovingDotAppearance(1)
+
+	document.getElementById("TXT").innerHTML = "";
+
+	setInterval(aniCommands,1); 
+	// this repeats the main art function every 1 ms
+	
+	celebrationTimerValue=30;
+	backgroundTimer=0;	
+	timerValue=500;
+	nBackgroundDots = 20;
+	rX = new Array
+	rY = new Array
+	for(ii=0;ii<nBackgroundDots;ii++){
+		score[ii]=0;
+	}
+
+	//the following code will get keyboard input
+	
+		document.onkeydown = function(event) { //start the function
+  	
+		var keyCode; //initialize a temporary variable keyCode
+ 	
+		if(event == null) //if there is no event
+ 		
+		// this line is made dense to discourage editing
+	  	
+		{keyCode = window.event.keyCode;}else{keyCode = event.keyCode;}switch(keyCode){
+    	
+    	
+		// these lines tell the program what to do when certain keys are struck
+    	
+		// each "case" issues just one command, so that it is easy to see all the cases and add to them
+  
+		// the case numbers are ASCII code. google "ascii code" to find a table for keys you want to use
+ 
+		// left arrow key
+    		
+		case 37:
+	    	
+		moveLeft()
+	 	
+		break; 
+
+    		
+		// up arrow key
+    	
+		case 38:
+     		
+		moveUp()
+      	
+		break; 
+
+   	 	
+		// right arrow key 
+	    
+		case 39:
+    		
+		moveRight()
+	      
+		break; 
+
+    	
+		// down arrow key
+	    
+		case 40:
+	    	
+		moveDown()
+	    
+		break; 
+		
+		//a
+    	
+		case 65:
+	    	
+		moveLeft()    	
+		break; 
+
+	    
+		//w
+	    
+		case 87:
+	    	
+		moveUp()	    
+		break; 
+
+	    
+		//d 
+    	
+		case 68:
+	    	
+		moveRight()
+	    
+		break; 
+
+	    
+		//s
+    	
+		case 83:
+     			
+		moveDown()
+	    
+		break;
+		//r
+		case 82:
+		location.reload()
+		break;
+		//e 
+    	
+		case 69:
+	    	
+		eCommand()
+	    
+		break;	    
+  
+		//j 
+    	
+		case 74:
+	    	
+		jCommand()
+	    
+		break;    	 
+			
+		default: 
+      	
+		break; 
+  		 
+ 		} // this is the end of the switch case code
+	
+	} // this is the end of the document onkeydown function	code
+
+} // this is the end of the onLoadFunctions() code
+
+// **************************************************************************************
+
+
+
+// **************************************************************************************
+
+// start keyboard functions
+
+/* 
+ these functions can contain as much code as you want.
+ right now they just change the value of movingX and movingY.
+ also, each one calls aniCommands2(), which is a function that
+ changes the aspects of the animation that are 'out of step' with the
+ main framerate advance. aniCommands() also calls aniCommands2(), so 
+ the dot is drawn in it's current  position whether you press a button to change it or not.
+*/
+ 
+
+
+//movement commands
+function moveLeft(){
+	
+	nMoves = nMoves +1;
+	
+	lastMoveX = -1;
+	
+	if (movingX - stepSize/2 > 0){
+	
+		movingX = movingX - stepSize;
+	
+		aniCommands2()
+	}
+
+	}
+
+function moveRight(){
+	
+	nMoves = nMoves+1;
+	
+	lastMoveX = 1;
+	
+	if (movingX + stepSize < canvasWidth + dotSize/2 + 1){
+	
+		movingX = movingX + stepSize;
+	
+		aniCommands2()
+	
+	}
+
+}
+
+function moveUp(){
+	
+	nMoves = nMoves+1;
+	
+	lastMoveY = 1;
+	
+	if (movingY - stepSize/2 > 0){
+				movingY = movingY - stepSize;
+	
+		aniCommands2()
+	
+	}
+
+}
+
+function moveDown(){
+	
+	nMoves = nMoves+1;
+		lastMoveY = -1;
+	
+	if (movingY + stepSize < canvasHeight + dotSize/2 + 1){	
+	
+		movingY = movingY + stepSize;
+	
+		aniCommands2()
+	
+	}
+
+}
+
+//other commands
+function wCommand(){
+	
+	nMoves = nMoves+1;
+		
+	newStepSize=stepSize/(stepSizeFactor);
+	
+	if(newStepSize>0){
+		
+		if(newStepSize<canvasWidth){
+			
+			stepSize = newStepSize;
+		
+		}
+	
+	}
+		
+	setMovingDotAppearance(2)
+	
+	aniCommands2()
+
+}
+
+function sCommand(){
+	
+	nMoves = nMoves+1;	
+		
+	newStepSize=stepSize*(stepSizeFactor);
+	
+	if(newStepSize>0.25){
+		
+		if(newStepSize<canvasWidth){
+			
+		stepSize = newStepSize;
+		
+		}
+	
+	}
+		
+	setMovingDotAppearance(1)	
+	
+	aniCommands2()
+
+}
+
+function aCommand(){
+	
+	nMoves = nMoves+1;	
+	
+	newStepSize=stepSize*(stepSizeFactor);
+	
+	if(newStepSize>0.25){
+		
+		if(newStepSize<canvasWidth){	
+			
+		stepSize = newStepSize;
+		
+		}
+		}
+	
+	setMovingDotAppearance(1)
+	
+	aniCommands2()
+
+}
+
+function dCommand(){
+	
+	nMoves = nMoves+1;
+	
+newStepSize=stepSize/(stepSizeFactor);
+
+	if(newStepSize>0.25){
+
+		if(newStepSize<canvasWidth){
+
+			stepSize = newStepSize;
+		
+		}
+
+	}
+		
+	setMovingDotAppearance(1)
+	
+	aniCommands2()
+
+}
+
+
+function eCommand(){	
+	document.getElementById("TXT").innerHTML = "You suck!"
+}
+function jCommand(){	
+	movingX = Math.round(Math.random()*canvasWidth);
+	movingY = Math.round(Math.random()*canvasHeight);
+}
+function xCommand(){	
+	movingX = Math.round(Math.random()*canvasWidth);
+	movingY = Math.round(Math.random()*canvasHeight);
+}
+// end keyboard functions
+
+// **************************************************************************************
+
+// 
+
+function aniCommands(){
+	if(gameOver==0){
+		
+	//clear the canvas
+	drawDot(canvasWidth/2,canvasHeight/2,'white',canvasWidth*2)
+
+	if(backgroundTimer==0){
+
+		//define new background art
+		for(ii=0;ii<nBackgroundDots;ii++){
+			rX[ii] = Math.round(Math.random()*canvasWidth);
+			rY[ii] = Math.round(Math.random()*canvasHeight);
+		}
+		backgroundTimer=timerValue;
+	}
+	else{	
+		backgroundTimer = backgroundTimer-1;
+	}
+
+	//draw current background art
+	for(ii=0;ii<nBackgroundDots;ii++){
+		dotColors = ['yellow', 'purple'];
+		drawDot( rX[ii] , rY[ii], 'purple', 6)
+		drawDot( rX[ii] , rY[ii], dotColors[score[ii]], 4)
+	}
+
+	//draw top layer
+	aniCommands2()
+	enemyCommands()
+
+	} //ends the gameOver if
+	else if(gameOver==1){
+		celebration()
+	}
+	else{
+		antiCelebration()
+	}
+}
+
+function aniCommands2(){
+	if(gameOver==0){
+	//draw dot
+	drawDot(movingX,movingY,dotColor, dotSize)
+
+	for(ii=0;ii<nBackgroundDots;ii++){
+		if(Math.abs(movingX-rX[ii])<dotSize){
+			if(Math.abs(movingY-rY[ii])<dotSize){
+				score[ii]=1;
+			}
+		}
+	}
+
+	checkScore()
+	}
+}
+
+
+
+
+function enemyCommands(){
+
+	if(enemyTimer==0){
+		//if the enemy is to the right or left
+		if(enemyX>movingX){
+			enemyX = enemyX - enemyStepSize;
+		}
+		else{
+			enemyX = enemyX + enemyStepSize;
+		}
+		//if the enemy is up or down
+		if(enemyY>movingY){
+			enemyY = enemyY - enemyStepSize;
+		}
+		else{
+			enemyY = enemyY + enemyStepSize;
+		}
+			
+			enemyTimer=enemyTimerValue;
+		}
+	else{	
+		enemyTimer = enemyTimer-1;
+	}
+
+	drawDot(enemyX,enemyY,'red',enemyStepSize)
+
+		if(Math.abs(movingX-enemyX)<enemyStepSize){
+			if(Math.abs(movingY-enemyY)<enemyStepSize){
+				health=health-50;
+				jCommand()
+			}
+		}
+
+}
+
+function checkScore(){
+	oldScore=scoreSum;
+	scoreSum=0;
+	for(ii=0;ii<nBackgroundDots;ii++){
+		if(score[ii]>0){
+			scoreSum=scoreSum+1;
+		}
+	}
+	document.getElementById("TXT").innerHTML = nBackgroundDots - scoreSum;
+	document.getElementById("TXT2").innerHTML = "health=" + health
+
+
+	if(scoreSum>nBackgroundDots-1){
+		gameOver=1;
+	}
+
+	if(health<1){
+		gameOver=2;
+		}
+
+	if(scoreSum>oldScore){
+		enemyStepSize = enemyStepSize + 1;
+		stepSize = stepSize + 1;
+		dotSize = dotSize + 1;
+		health=health+5;
+	}
+	
+}
+
+function celebration(){
+
+	if(backgroundTimer==0){
+		for(ii=0;ii<100;ii++){
+		randX = Math.random()*canvasWidth;
+		randY = Math.random()*canvasHeight;
+                randZ = Math.random()*canvasLength
+		colors = ['red', 'orange', 'yellow', 'green', 'teal', 'turquoise', 'aqua', 'indigo', 'white'];
+		whichColor = colors[Math.round(Math.random()*colors.length)];
+		randSize = Math.random()*canvasWidth/10;
+		drawDot(randX,randY,'black',randSize+2)
+		drawDot(randX,randY,whichColor,randSize)
+	}
+
+		backgroundTimer=celebrationTimerValue;
+	}
+	else{	
+		backgroundTimer = backgroundTimer-1;
+	}
+	document.getElementById("TXT").innerHTML = "You Win! Refresh to play again!";
+}
+
+function antiCelebration(){
+
+	if(backgroundTimer==0){
+		for(ii=0;ii<100;ii++){
+		randX = Math.random()*canvasWidth;
+		randY = Math.random()*canvasHeight;
+		colors = ['red','orange','yellow','black'];
+		whichColor = colors[Math.round(Math.random()*colors.length)];
+		randSize = Math.random()*canvasWidth/10;
+		drawDot(randX,randY,'black',randSize+2)
+		drawDot(randX,randY,whichColor,randSize)
+	}
+
+		backgroundTimer=celebrationTimerValue;
+	}
+	else{	
+		backgroundTimer = backgroundTimer-1;
+	}
+	document.getElementById("TXT").innerHTML = "You Lose! Refresh to try again!"
+}
+
+
+
+function setMovingDotAppearance( dotStyle ){
+
+	if(dotStyle==1){
+		dotColor = 'purple';
+	}
+	else{
+		dotColor = 'teal';
+	}
+	dotSize = stepSize;
+}
+
+//*****************************************************************************************
+
+// this code is not meant to be edited much
+
+function drawDot( xpos, ypos, currColor, dotsize ) {
+   
+	var c = document.getElementById("myCanvas");
+   
+	var cxt = c.getContext("2d");
+
+   
+	cxt.fillStyle = currColor;
+   
+	cxt.beginPath();
+   
+	cxt.arc(xpos,ypos,dotsize,0,Math.PI*2,true);
+   
+	cxt.closePath();
+   
+	cxt.fill();
+
+}
+
+
+
+function drawLine( startX , startY , startZ , endX , endY, endZ, currcolor, lineWidth){
+	
+	var c = document.getElementById("myCanvas");
+	
+	var cxt = c.getContext("3d");
+
+  	
+	cxt.fillStyle = currcolor;
+   	
+	cxt.strokeStyle = currcolor;
+   	
+	cxt.beginPath();
+   	
+	cxt.moveTo(startX , startY , startZ);
+   	
+	cxt.lineTo(endX , endY , endZ);
+   	
+	cxt.lineWidth = lineWidth;
+   	
+	cxt.closePath();
+   	
+	cxt.stroke();		
+
+}
+
+
+//end art commands
+// **************************************************************************************
+</script></head>
+</head>
+<body bgcolor="#CCCCCC" onload="onLoadFunction(1)">
+
+<p>
+<center>
+Takeru's Website!!!!<p>
+<canvas id="myCanvas" width=1000 height=500></canvas>
+<b><p id="TXT">This is where drawings go</p>
+<p id="TXT2">This is where drawings go</p></b>
+<table border=0><tr>
+<tr><td colspan=3><center><b>Arrow keys or ASDW: Move; J: Jump</b></center></td>
+</tr></table>
+<tr><td colspan=3><center><b>Collect all the dots before the red dot kills you!</b></center></td>
+</tr></table>
+
+
+
+<p id="myPar">Adam's Joke:</p>
+
+<button type="button" onclick="myFunction()">Why do asians always have to use da phone book?</button>
+
+<script>
+function myFunction()
+{
+alert("Because they wing the wong number!!!");
+}
+</script>
+
+
+</body>
+
+</html>
